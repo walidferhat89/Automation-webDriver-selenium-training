@@ -1,28 +1,97 @@
 package base;
 
 
-import org.junit.After;
-import org.junit.Before;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Parameters;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
 
 public class commonApi {
 
     public WebDriver driver;
+    String currentDir = System.getProperty("user.dir");
+    String browserstackUsername="walidferhat_yxeTJ1";
+    String browserstackPassword="euohJpjYBWiG4JpwZLbN";
+    String saucelabsUsername="oauth-walidferhat89-2a20d";
+    String saucelabspassword="d2b1ff08-0d4b-49e4-ac03-afa7d1959180";
+    public void cloudDriver(String envirnmnt,String username,String password,
+                            String os,String osVersion,String browser,String browserVersion) throws MalformedURLException {
 
-    @Before
-    public void setUp() {
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        capabilities.setCapability("os",os);
+        capabilities.setCapability("osVersion",osVersion);
+        capabilities.setCapability("browser",browser);
+        capabilities.setCapability("browserVersion",browserVersion);
 
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\walid\\IdeaProjects\\may-22-experteam-bootcamp-framework\\driver\\chromedriver.exe");
-        driver = new ChromeDriver();
-        driver.get("https://www.saucedemo.com/");
+        if (envirnmnt.equalsIgnoreCase("browserstack")) {
+            capabilities.setCapability("resolution","1024x768");
+            driver = new RemoteWebDriver(new URL("http://"+username+":"+password+"@hub-cloud.browserstack.com:80/wd/hub"),capabilities );
+        }
+        else if (envirnmnt.equalsIgnoreCase("saucelabs")) {
+            driver = new RemoteWebDriver(new URL("http://"+username+":"+password+"@ondemand.saucelabs.com:80/wd/hub"),capabilities );
+        }
+    }
+    public void localDriver(String os,String browser){
+        if(os.equalsIgnoreCase("win")){
+            if(browser.equalsIgnoreCase("chrome")){
+                System.setProperty("webdriver.chrome.driver", currentDir+"\\driver\\win\\chromedriver.exe");
+                driver = new ChromeDriver();
+
+            }
+            else if (browser.equalsIgnoreCase("firefox")) {
+                System.setProperty("webdriver.gecko.driver", currentDir+"\\driver\\win\\geckodriver.exe");
+                driver = new FirefoxDriver();
+            }
+        }
+        else if (os.equalsIgnoreCase("mac")) {
+            if(browser.equalsIgnoreCase("chrome")){
+                System.setProperty("webdriver.chrome.driver", currentDir+"/driver/mac/chromedriver");
+                driver = new ChromeDriver();
+
+            }
+            else if (browser.equalsIgnoreCase("firefox")) {
+                System.setProperty("webdriver.gecko.driver", currentDir+"/driver/mac/geckodriver-v0.31.0-macos.tar.gz");
+                driver = new FirefoxDriver();
+
+            }
+
+        }
+    }
+    @Parameters({"useCloudDrive","os","browser","url","envrnmnr","osVersion","browserVersion"})
+    @BeforeMethod
+    public void setUp(boolean useCloudDriv,String os, String browser, String url,String envrnmnt,
+                      String osVersion,String browserVersion) throws MalformedURLException {
+
+        if(useCloudDriv){
+            if(envrnmnt.equalsIgnoreCase("browserstack")){
+            cloudDriver(envrnmnt,browserstackUsername,browserstackPassword,os,osVersion,browser,browserVersion);
+            }
+            else if (envrnmnt.equalsIgnoreCase("saucelabs")) {
+                cloudDriver(envrnmnt,saucelabsUsername,saucelabspassword,os,osVersion,browser,browserVersion);
+            }
+
+        }
+        else {
+            localDriver(os,browser);
+        }
+
+        driver.get(url);
         driver.manage().window().maximize();
-
     }
 
-    @After
+
+
+        @AfterMethod
     public void tearDown() {
 
         driver.close();
@@ -64,4 +133,6 @@ public class commonApi {
             return driver.findElement(By.xpath(locator)).isDisplayed();
         }
     }
+
 }
+

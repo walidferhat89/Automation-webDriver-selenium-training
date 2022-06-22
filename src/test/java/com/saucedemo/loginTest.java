@@ -1,8 +1,8 @@
 package com.saucedemo;
 
 import base.commonApi;
-import org.junit.Assert;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 
 public class loginTest extends commonApi {
@@ -58,5 +58,23 @@ public class loginTest extends commonApi {
         Assert.assertEquals("Epic sadface: Username and password do not match any user in this service", msg);
     }
 
+    @Test
+    public void addItems(){
+        test1();
 
+        click("a[id='item_4_title_link']");
+        System.out.println("login btn clicked");
+
+        String getTex = getElementText("div[class='inventory_details_name large_size']");
+        System.out.println("headerTitle:" + getTex);
+        Assert.assertEquals("Sauce Labs Backpack", getTex);
+
+        click("button[id='add-to-cart-sauce-labs-backpack']");
+        System.out.println("item added to cart");
+
+        String btnText = getElementText("button[id='remove-sauce-labs-backpack']");
+        System.out.println("add btn change to remove btn:" + btnText);
+        Assert.assertEquals("REMOVE", btnText);
+
+    }
 }

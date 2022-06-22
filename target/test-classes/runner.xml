@@ -1,0 +1,20 @@
+<suite name="sauce demo test" >
+    <parameter name="useCloudDrive" value="true"> </parameter>
+    <parameter name="os" value="osx"> </parameter>
+    <parameter name="browser" value="chrome"> </parameter>
+    <parameter name="url" value="https://www.saucedemo.com/"> </parameter>
+    <parameter name="envrnmnr" value="browserstack"> </parameter>
+    <parameter name="osVersion" value="Sierra"> </parameter>
+    <parameter name="browserVersion" value="102"> </parameter>
+    <test name="basic component" >
+        <classes>
+            <class name="com.saucedemo.basicComponentTest" />
+        </classes>
+    </test>
+
+    <test name="login">
+        <classes>
+            <class name="com.saucedemo.loginTest" />
+        </classes>
+    </test>
+</suite>
